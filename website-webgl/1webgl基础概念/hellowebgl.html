@@ -8,7 +8,7 @@
   <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
 </head>
 <body>
-  <canvas id="webgl" ></canvas>
+  <canvas id="webgl" width="400" height="400"></canvas>
   <script id="vertexShader" type="x-shader/x-vertex">
     attribute vec4 a_Position;
     void main(){
@@ -23,12 +23,7 @@
     }
   </script>
   <script>
-    const canvas = document.querySelector('#webgl');//获取画布
-    const gl = canvas.getContext("webgl");//创建webgl上下文
-    if(!gl){
-      console.log("no webgl");
-    }
-    // 创建着色器方法，参数：渲染上下文，着色器类型，数据源
+// 创建着色器方法，参数：渲染上下文，着色器类型，数据源
     function createShader(gl,type,source){
       // 创建着色器对象
       let shader = gl.createShader(type);
@@ -43,14 +38,9 @@
       console.log(gl.getShaderInfoLog(shader));
       gl.deleteShader(shader);
     }
-    let vertexShaderSource = document.querySelector("#vertexShader").text;
-    let fragmentShaderSource = document.querySelector("#fragmentShader").text;
-    // 创建着色器
-    let vertexShader = createShader(gl,gl.VERTEX_SHADER,vertexShaderSource);
-    let fragmentShader = createShader(gl,gl.FRAGMENT_SHADER,fragmentShaderSource);
 
-    // 将两个着色器链接到program(着色器程序)
-    function createProgram(gl,vertexShader,fragmentShader){
+// 将两个着色器链接到program(着色器程序)
+function createProgram(gl,vertexShader,fragmentShader){
       let program = gl.createProgram();
       gl.attachShader(program,vertexShader);
       gl.attachShader(program,fragmentShader);
@@ -62,6 +52,20 @@
       console.log(gl.getProgramInfoLog(program));
       gl.deleteProgram(program);
     }
+
+    function main(){
+    const canvas = document.querySelector('#webgl');//获取画布
+    const gl = canvas.getContext("webgl");//创建webgl上下文
+    if(!gl){
+      console.log("no webgl");
+    }
+    
+    let vertexShaderSource = document.querySelector("#vertexShader").text;
+    let fragmentShaderSource = document.querySelector("#fragmentShader").text;
+    // 创建着色器
+    let vertexShader = createShader(gl,gl.VERTEX_SHADER,vertexShaderSource);
+    let fragmentShader = createShader(gl,gl.FRAGMENT_SHADER,fragmentShaderSource);
+
     let program = createProgram(gl,vertexShader,fragmentShader);
     // 现在已经在GPU上设置好了GLSL着色器程序,还需要提供数据
     // webgl主要的任务就是设置好状态并为GLSL着色器程序提供数据
@@ -77,12 +81,14 @@
 
     // 通过绑定点向缓冲中存放数据
     // 三个二维点坐标
-    let position =new Float32Array([
+    
+    // ！！！！---  易错点：坐标数据多了或者少了，不报错，但是不会绘制出来         ----！！！！！
+    let positions =new Float32Array([
       0,0,
       0,0.5,
-      0,7,0,
+      0.7,0
     ])
-    gl.bufferData(gl.ARRAY_BUFFER,position,gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER,positions,gl.STATIC_DRAW);
 
     // 以上代码为 初始化代码 在页面加载时只会运行一次
 
@@ -94,7 +100,7 @@
     gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
    
     // 清空画布
-    gl.clearColor(0.1,0.4,0.2,0);
+    gl.clearColor(0.1,0.4,0.2,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // 告诉webgl运行哪个着色器程序
@@ -116,6 +122,8 @@
     let primitiveType = gl.TRIANGLES;
     let count = 3
     gl.drawArrays(primitiveType,offset,count);
+  }
+  main();
   </script>
 </body>
 </html>
