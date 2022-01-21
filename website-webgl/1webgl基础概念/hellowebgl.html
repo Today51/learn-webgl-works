@@ -5,9 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
 </head>
 <body>
-  <canvas id="webgl"></canvas>
+  <canvas id="webgl" ></canvas>
   <script id="vertexShader" type="x-shader/x-vertex">
     attribute vec4 a_Position;
     void main(){
@@ -34,7 +35,7 @@
       // 提供数据源
       gl.shaderSource(shader,source);
       // 编译生成着色器
-      gl.compilerShader(shader);
+      gl.compileShader(shader);
       let success = gl.getShaderParameter(shader,gl.COMPILE_STATUS);
       if(success){
         return shader;
@@ -66,7 +67,7 @@
     // webgl主要的任务就是设置好状态并为GLSL着色器程序提供数据
 
     // 获取a_Position的位置 (获取属性值的位置和全局属性的位置应该在初始化的时候完成，而不是在循环渲染中)
-    const positionAttributeLocation = gl.getAttributeLocation(program,'a_Position');
+    const positionAttributeLocation = gl.getAttribLocation(program,'a_Position');
 
     // 属性值从缓冲中获取数据
     let positionBuffer = gl.createBuffer();//创建缓冲
@@ -75,6 +76,46 @@
     gl.bindBuffer(gl.ARRAY_BUFFER,positionBuffer);
 
     // 通过绑定点向缓冲中存放数据
+    // 三个二维点坐标
+    let position =new Float32Array([
+      0,0,
+      0,0.5,
+      0,7,0,
+    ])
+    gl.bufferData(gl.ARRAY_BUFFER,position,gl.STATIC_DRAW);
+
+    // 以上代码为 初始化代码 在页面加载时只会运行一次
+
+    // 以下是渲染代码，在每次绘制时执行
+
+    webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+    // 如何使用画布大小 调用gl.viewport方法传递画布尺寸
+    // x轴 0---》gl.canvas.width y轴 0---》gl.canvas.height
+    gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+   
+    // 清空画布
+    gl.clearColor(0.1,0.4,0.2,0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // 告诉webgl运行哪个着色器程序
+    gl.useProgram(program);
+    // 告诉webgl如何从之前的缓冲中获取数据给着色器
+    // 启用对应的属性
+    gl.enableVertexAttribArray(positionAttributeLocation);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER,positionBuffer);
+    // 指定从缓冲中读取数据方式
+    let size = 2;//每次迭代运行提取两个单位数据
+    let type = gl.FLOAT;//每个单位的数据类型是32位浮点型
+    let normalize = false;//不需要归一化数据
+    let stride = 0;//每次迭代运行多少内存到下一个数据开始点
+    let offset = 0;//从缓冲起始位置开始读取
+    gl.vertexAttribPointer(positionAttributeLocation,size,type,normalize,stride,offset); 
+    
+    // 绘制图元类型 三角
+    let primitiveType = gl.TRIANGLES;
+    let count = 3
+    gl.drawArrays(primitiveType,offset,count);
   </script>
 </body>
 </html>
