@@ -5,7 +5,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
 </head>
 <body>
   <canvas id="webgl" width="400" height="400"></canvas>
@@ -81,7 +80,7 @@ function createProgram(gl,vertexShader,fragmentShader){
 
     // 通过绑定点向缓冲中存放数据
     // 三个二维点坐标
-    
+
     // ！！！！---  易错点：坐标数据多了或者少了，不报错，但是不会绘制出来         ----！！！！！
     let positions =new Float32Array([
       0,0,
@@ -93,8 +92,12 @@ function createProgram(gl,vertexShader,fragmentShader){
     // 以上代码为 初始化代码 在页面加载时只会运行一次
 
     // 以下是渲染代码，在每次绘制时执行
+    
+    if(gl.canvas.width !== gl.canvas.clientWidth || gl.canvas.height !== gl.canvas.clientHeight){
+      gl.canvas.width = gl.canvas.clientWidth;
+      gl.canvas.height = gl.canvas.clientHeight;
+    }
 
-    webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     // 如何使用画布大小 调用gl.viewport方法传递画布尺寸
     // x轴 0---》gl.canvas.width y轴 0---》gl.canvas.height
     gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
