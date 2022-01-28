@@ -86,15 +86,22 @@
       gl.enableVertexAttribArray(positionLocation);
       gl.vertexAttribPointer(positionLocation,2,gl.FLOAT,false,0,0);
 
-      // 绑定颜色缓冲区并开启通道
+      // 绑定颜色缓冲区并开启通道 
+      // 标准化颜色0-1 在复杂几何体中占有大量内存，改用unsigned_byte 0-255 节省空间
       gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([
-        0.2,0.16,0.93,1,
-        0.81,0.12,0.38,1,
-        0.25,0.31,0.73,1,
+      // gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([
+      //   0.2,0.16,0.93,1,
+      //   0.81,0.12,0.38,1,
+      //   0.25,0.31,0.73,1,
+      // ]),gl.STATIC_DRAW)
+      gl.bufferData(gl.ARRAY_BUFFER,new Uint8Array([
+      203,129,134,255,
+      40,200,140,255,
+      90,21,121,255,
       ]),gl.STATIC_DRAW)
       gl.enableVertexAttribArray(colorLocation);
-      gl.vertexAttribPointer(colorLocation,4,gl.FLOAT,false,0,0);
+      // gl.vertexAttribPointer(colorLocation,4,gl.FLOAT,false,0,0);
+      gl.vertexAttribPointer(colorLocation,4,gl.UNSIGNED_BYTE,true,0,0);
 
       gl.drawArrays(gl.TRIANGLES,0,3)
 
